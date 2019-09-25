@@ -1,0 +1,21 @@
+# Virtualenv
+.env
+.venv
+.ENV
+.VENV
+venv
+env
+VENV
+ENV
+
+# IDEs
+.idea
+.vscode
+
+# Logs
+*.log
+
+# Django-Python
+migrations
+__pycache__/
+db.sqlite3

@@ -13,7 +13,7 @@ class Court(models.Model):
         (X4_5, '4x5')
     )
 
-    name = models.CharField(max_length='100')
+    name = models.CharField(max_length=100)
     latitude = models.FloatField()
     longitude = models.FloatField()
     type = models.CharField(max_length=3, choices=TYPE_CHOICES)

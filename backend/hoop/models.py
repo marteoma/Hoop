@@ -5,12 +5,12 @@ from django.db import models
 class Court(models.Model):
     X3_3 = "3x3"
     X4_4 = "4x4"
-    X4_5 = "4x5"
+    X5_5 = "5x5"
 
     TYPE_CHOICES = (
         (X3_3, '3x3'),
         (X4_4, '4x4'),
-        (X4_5, '4x5')
+        (X5_5, '5x5')
     )
 
     name = models.CharField(max_length=100)

@@ -31,6 +31,9 @@ dependencies:
   sliding_up_panel: ^0.3.5
   multi_image_picker: ^4.5.4
   http: ^0.12.0+2
+  mockito: ^4.1.1
+  #test: ^1.8.0
+  
 
 dev_dependencies:
   flutter_test:

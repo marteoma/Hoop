@@ -14,7 +14,7 @@ import 'package:http/http.dart';
 
 void main() => runApp(CourtCreator2(nombreCancha: null, posicionSeleccionada: null,));
 var  mode;
-const modos = ["3X3", "4X4", "5X5"];
+const modos = ["3x3", "4x4", "5x5"];
 class CourtCreator2 extends StatelessWidget {
 
   //Constructor que recibe parametros de CourtCreator para completar la informacion para el proceso de
@@ -57,10 +57,14 @@ class CourtCreator2 extends StatelessWidget {
     print("si cogio el metodo");
     double lat= ubicacion.latitude;
     double long= ubicacion.longitude;
-    String url= "";
-    String json ='{"name":'+nameCourt+',"Latitude":'+lat.toString()+',"Longitude":'+long.toString()+',"type":'+type+'}';
-    //Response response = await post(url,body:json);
+    Map<String, String> headers = {"Content-type": "application/json"};
+    String url= "https://hoop-back.herokuapp.com/api/v1/courts/";
+   // String json ='{"name":'+nameCourt+',"latitude":'+"$lat"+',"longitude":'+"$long"+',"type":'+type+'}';
+    String json= '{"name": "$nameCourt","latitude": $lat,"longitude": $long,"type": "$type"}';
     print(json);
+    Response response = await post(url,headers:headers,body:json);
+    print(response.statusCode);
+    print(response.body);
   }
 //METODO ENCARGADO DE CREAR LOS MARKERS CON EL ICONO DE CANCHA EN EL MAPA
   void addCourts(BuildContext context) {

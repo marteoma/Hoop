@@ -28,14 +28,14 @@ createCourt(String nameCourt,String type,LatLng ubicacion) async {
 
 main() {
 
-    test('Probando si la cancha agrega exitosamente usando un mock de lo que hay que agregar en el met', () async {
+    test('Probando si la cancha agrega exitosamente usando un mock de lo que hay que agregar en el metodo', () async {
      
 
       // Use Mockito to return a successful response when it calls the
       // provided http.Client.
     
 
-      expect(await createCourt("ultima prueba","3x3",LatLng(6.2300994, -75.6037806)), equalsIgnoringWhitespace('{"id":13,"name":"hola","latitude":6.2300994,"longitude":-75.6037806,"type":"3x3"}'));
+      expect(await createCourt("ultima prueba","3x3",LatLng(6.2300994, -75.6037806)), equalsIgnoringWhitespace('{"id":14,"name":"ultima prueba","latitude":6.2300994,"longitude":-75.6037806,"type":"3x3"}'));
     });
 
 }

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'hoop.apps.HoopConfig',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

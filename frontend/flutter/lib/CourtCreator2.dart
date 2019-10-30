@@ -1,5 +1,4 @@
-import 'dart:convert' as prefix0;
-import 'dart:io';
+
 import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -54,17 +53,17 @@ class CourtCreator2 extends StatelessWidget {
   }
 // METODO QUE ENVIA LA INFORMACION DE LA CANCHA Y LA CREA
   createCourt(String nameCourt,String type,LatLng ubicacion) async {
-    print("si cogio el metodo");
+    
     double lat= ubicacion.latitude;
     double long= ubicacion.longitude;
     Map<String, String> headers = {"Content-type": "application/json"};
     String url= "https://hoop-back.herokuapp.com/api/v1/courts/";
    // String json ='{"name":'+nameCourt+',"latitude":'+"$lat"+',"longitude":'+"$long"+',"type":'+type+'}';
     String json= '{"name": "$nameCourt","latitude": $lat,"longitude": $long,"type": "$type"}';
-    print(json);
+   
     Response response = await post(url,headers:headers,body:json);
     print(response.statusCode);
-    print(response.body);
+    
   }
 //METODO ENCARGADO DE CREAR LOS MARKERS CON EL ICONO DE CANCHA EN EL MAPA
   void addCourts(BuildContext context) {

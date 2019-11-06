@@ -1,10 +1,13 @@
 import 'package:solid_bottom_sheet/solid_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 
-Widget btCancha(bool show) {
+
+Widget btCancha( BuildContext context ,bool show, String c)  {
   return Visibility(
       visible: show,
-      child: SolidBottomSheet(
+      child: StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return SolidBottomSheet(
         headerBar: Container(
           color: Colors.deepOrange[200],
           height: 50,
@@ -12,6 +15,11 @@ Widget btCancha(bool show) {
             child: Text("Informacion de la cancha"),
           ),
         ),
-        body: Text("Pulsa porfavor una cancha para ver la informacion de esta"),
-      ));
+        body: Text(c),
+      );
+
+        },
+        
+      ) 
+      );
 }

@@ -29,6 +29,7 @@ bool showInfoCancha = false;
 bool loading = true;
 var tapped;
 
+
 Uint8List markerIcon;
 List<Mapa> mapas = List<Mapa>();
 
@@ -126,6 +127,9 @@ class PrincipalPage extends StatelessWidget {
 
 class MainPage extends StatelessWidget {
   List<Mapa> canchas;
+ static String name = "holis";
+ final GlobalKey<ScaffoldState> _scaffoldKey = new  GlobalKey<ScaffoldState>();
+ 
 
   MainPage({Key key, @required this.canchas}) : super(key: key);
 
@@ -142,6 +146,8 @@ class MainPage extends StatelessWidget {
             print("si cogio");
             showInfoCancha = !showInfoCancha;
             print(showInfoCancha);
+            name = c.name;
+            
           },
           consumeTapEvents: tapped);
 
@@ -156,6 +162,7 @@ class MainPage extends StatelessWidget {
       resizeToAvoidBottomPadding: false,
       appBar: AppBar(
         title: Text("Hoop!"),
+        key: _scaffoldKey,
       ),
 
       //esto aqui es para ir a donde se agregan las canchas.
@@ -202,7 +209,7 @@ class MainPage extends StatelessWidget {
           canvasColor: Colors.deepOrange[200],
         ),
       ),
-      bottomSheet: btCancha(showInfoCancha),
+      bottomSheet: btCancha(context, showInfoCancha, name),
       body: Stack(
         children: <Widget>[
           Container(

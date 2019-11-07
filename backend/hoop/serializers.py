@@ -9,13 +9,12 @@ class CourtSerializer(serializers.ModelSerializer):
 
 
 class PlayerSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source='user.username', read_only=True)
     score = serializers.FloatField(read_only=True)
     courts = CourtSerializer(read_only=True, many=True)
 
     class Meta:
         model = Player
-        fields = ('id', 'position', 'user', 'username', 'score', 'courts')
+        fields = ('id', 'position', 'fullname', 'score', 'courts')
 
 
 class LinkedPlayerSerializer(serializers.ModelSerializer):

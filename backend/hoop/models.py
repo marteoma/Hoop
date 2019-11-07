@@ -41,7 +41,7 @@ class Player(models.Model):
         (P5, 'Centre'),
     )
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    fullname = models.CharField(max_length=100)
     position = models.CharField(max_length=2, choices=POSITION_CHOICES)
     courts = models.ManyToManyField(Court, related_name='courts', through='LinkedPlayer')
 
@@ -50,10 +50,10 @@ class Player(models.Model):
         return LinkedPlayer.objects.filter(player=self).aggregate(Avg('score'))['score__avg']
 
     def __str__(self):
-        return self.user.username
+        return self.fullname
 
     class Meta:
-        ordering = ('user__username', )
+        ordering = ('fullname', )
 
 
 class LinkedPlayer(models.Model):

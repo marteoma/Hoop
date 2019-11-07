@@ -5,7 +5,7 @@ from hoop.models import *
 
 @admin.register(Player)
 class PlayerAdmin(admin.ModelAdmin):
-    list_display = ('user', 'position', 'score')
+    list_display = ('fullname', 'position', 'score')
 
 
 @admin.register(Court)

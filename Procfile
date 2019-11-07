@@ -1,1 +1,1 @@
-web: cd backend && python manage.py test && gunicorn backend.wsgi --log-file -
+web: cd backend && gunicorn backend.wsgi && python manage.py migrate--log-file -

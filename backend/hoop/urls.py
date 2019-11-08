@@ -9,6 +9,7 @@ router.register('players', PlayerViewSet)
 router.register('linked', LinkedPlayerViewSet)
 
 urlpatterns = [
+    asdfkasjklñjklñasdfjklas
     path('', include(router.urls)),
     path('api-token-auth/', obtain_jwt_token),
     path('api-token-refresh/', refresh_jwt_token),

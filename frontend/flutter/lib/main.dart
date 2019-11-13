@@ -13,6 +13,7 @@ import 'mapas.dart';
 import 'nearestCourt.dart';
 import 'package:async_loader/async_loader.dart';
 import 'CourtCreator.dart';
+import 'Login.dart';
 
 void main() => runApp(PrincipalPage());
 final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -31,18 +32,18 @@ var tapped;
 
 
 Uint8List markerIcon;
-List<Mapa> mapas = List<Mapa>();
+List<Mapa> canchas = List<Mapa>();
 
 class PrincipalPage extends StatelessWidget {
   final GlobalKey<AsyncLoaderState> asyncLoaderState =
       new GlobalKey<AsyncLoaderState>();
 
   Future<List<Mapa>> getCourt() async {
-    print("si cogio el metodo");
+    //print("si cogio el metodo");
     Map<String, String> headers = {"Content-type": "application/json"};
     String url = "https://hoop-back.herokuapp.com/api/v1/courts/";
     // String json ='{"name":'+nameCourt+',"latitude":'+"$lat"+',"longitude":'+"$long"+',"type":'+type+'}';
-
+    
     Response response = await get(url, headers: headers);
     //print(response.statusCode);
     final json = jsonDecode(response.body);
@@ -56,10 +57,10 @@ class PrincipalPage extends StatelessWidget {
       m.longitude = j['longitude'];
       m.name = j['name'];
       m.type = j['type'];
-      mapas.add(m);
+      canchas.add(m);
     });
-     
-  
+    // print(canchas[0].id);
+  return canchas;
   }
 
   Future<List<Mapa>> getLocation() async {
@@ -117,10 +118,14 @@ class PrincipalPage extends StatelessWidget {
     );
 
     return new MaterialApp(
-      
-      
-      
+      theme: ThemeData(
+                  hintColor: Color(0xFFC0F0E8),
+                  primaryColor: Colors.deepOrangeAccent[400],
+                  canvasColor: Colors.white,
+                  fontFamily: "Montserrat",
+                ),
       home: _asyncLoader,
+      
     );
   }
 }
@@ -133,8 +138,10 @@ class MainPage extends StatelessWidget {
 
   MainPage({Key key, @required this.canchas}) : super(key: key);
 
-  void addCourts(BuildContext context, List<Mapa> canchas) {
-    canchas.forEach((c) {
+  void addCourts(BuildContext context, List<Mapa> courts) {
+    
+    courts.forEach((c) {
+      //print(c);
       var uuid = new Uuid();
       var id = uuid.v4();
       Marker _marker = new Marker(
@@ -143,7 +150,7 @@ class MainPage extends StatelessWidget {
           position: LatLng(c.latitude, c.longitude),
           infoWindow: InfoWindow(title: c.name, snippet: c.type),
           onTap: () {
-            print("si cogio");
+            //print("si cogio");
             showInfoCancha = !showInfoCancha;
             print(showInfoCancha);
             name = c.name;
@@ -157,7 +164,8 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    addCourts(context, mapas);
+    //print(canchas);
+    addCourts(context, canchas);
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       appBar: AppBar(
@@ -174,14 +182,7 @@ class MainPage extends StatelessWidget {
                 accountName: Text("Carlos Asprilla"),
                 accountEmail: Text("Point Guard Puntaje : 70"),
                 currentAccountPicture: CircleAvatar(
-                  backgroundColor:
-                      Theme.of(context).platform == TargetPlatform.iOS
-                          ? Colors.blue
-                          : Colors.white,
-                  child: Text(
-                    "C",
-                    style: TextStyle(fontSize: 40.0),
-                  ),
+                  backgroundImage: AssetImage("assets/basketball-player.png"),
                 ),
               ),
               ListTile(
@@ -206,7 +207,7 @@ class MainPage extends StatelessWidget {
           ),
         ),
         data: Theme.of(context).copyWith(
-          canvasColor: Colors.deepOrange[200],
+          canvasColor: Colors.white,
         ),
       ),
       bottomSheet: btCancha(context, showInfoCancha, name),

@@ -11,10 +11,14 @@ import 'mapas.dart';
 import 'package:latlong/latlong.dart' as calculate;
 import 'package:async_loader/async_loader.dart';
 import 'main.dart';
+import 'package:giffy_dialog/giffy_dialog.dart';
+import 'package:map_launcher/map_launcher.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 List<double> distancias = List<double>();
 List<String> nombres = List<String>();
 List<Mapa> mapas = List<Mapa>();
+List<LatLng> geo = List<LatLng>();
 void main() => runApp(NearestCourt());
 int meter = 0;
 
@@ -63,8 +67,9 @@ class NearestCourt extends StatelessWidget {
           new calculate.LatLng(c.latitude, c.longitude));
       distancias.add(rest);
       nombres.add(c.name);
+      geo.add(LatLng(c.latitude,c.longitude));
     });
-    print(prefix0.lng);
+    //print(prefix0.lng);
   }
 
   Future<List<Mapa>> getCourt() async {
@@ -88,7 +93,38 @@ class NearestCourt extends StatelessWidget {
     calculateDistances(mapas);
   }
 
-  Widget getCourtList(List<Mapa> mapas) {
+
+  void showMessage(BuildContext context, int index) async {
+    showDialog(
+        context: context,
+        builder: (_) => AssetGiffyDialog(
+            
+              onlyOkButton: true,
+              image: Image(image: AssetImage("assets/map.gif")),
+              title: Text(
+                'No sabes donde queda la cancha!?',
+                style: TextStyle(fontSize: 21.0, fontWeight: FontWeight.w600),
+                textAlign: TextAlign.center,
+              ),
+              description: Text(
+                "Tranquilo al presionar en cualquiera de las canchas , automaticamente te enviara a google maps!",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.black54,
+                ),
+                textScaleFactor: 1.1,
+              ),
+              entryAnimation: EntryAnimation.RIGHT_LEFT,
+              onOkButtonPressed: ()  {
+                //Navigator.of(context).pop();
+                LatLng cord = geo[index];
+                MapUtils.openMap(cord.latitude,cord.longitude);
+                
+              },
+            ));
+  }
+
+  Widget getCourtList(List<Mapa> mapas, BuildContext context) {
     return ListView.builder(
       itemCount: distancias.length,
       itemBuilder: (BuildContext context, int index) {
@@ -104,8 +140,15 @@ class NearestCourt extends StatelessWidget {
           ),
           title: Text(nombres[index]),
           subtitle: Text("Se encuentra a una distancia de " +
-              distancias[index].toString() +
-              " Metros"),
+              (distancias[index]/1000).toStringAsFixed(1) +
+              " Kilometros"),
+          onTap: () {
+            //showMessage(context, index);
+            //print(geo);
+            //double lat = mapas[index].latitude;
+              //  double lng = mapas[index].longitude;
+               showMessage(context, index);
+          },
         );
       },
     );
@@ -146,10 +189,10 @@ class NearestCourt extends StatelessWidget {
       initState: () async => await getCourt(),
       renderLoad: () => Center(child: new CircularProgressIndicator()),
       renderError: ([error]) => getNoConnectionWidget(),
-      renderSuccess: ({data}) => getCourtList(data),
+      renderSuccess: ({data}) => getCourtList(data, context),
     );
     return WillPopScope(
-      onWillPop: (){
+      onWillPop: () {
         goback(context);
       },
       child: Scaffold(
@@ -160,9 +203,14 @@ class NearestCourt extends StatelessWidget {
   }
 }
 
-buildAppBarTitle(String title) {
-  return new Padding(
-    padding: new EdgeInsets.all(10.0),
-    child: new Text(title),
-  );
+class MapUtils {
+
+  static openMap(double latitude, double longitude) async {
+    String googleUrl = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+    if (await canLaunch(googleUrl)) {
+      await launch(googleUrl);
+    } else {
+      throw 'Could not open the map.';
+    }
+  }
 }

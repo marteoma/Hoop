@@ -37,13 +37,18 @@ dependencies:
   latlong: ^0.6.1
   async_loader: ^0.1.2
   floop: ^1.1.0
+  flushbar: ^1.9.1
+  giffy_dialog: ^1.5.0
+  map_launcher: ^0.2.0
+  url_launcher: ^5.2.5
+  
   
   
 
 dev_dependencies:
+ 
   flutter_test:
     sdk: flutter
-
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -61,6 +66,11 @@ flutter:
     - assets/
     - assets/court.png
     - assets/sad.png
+    - assets/login.png
+    - assets/basket.gif
+    - assets/evento.jpg
+    - assets/map.gif
+    - assets/basketball-player.png
     
 
   # An image asset can refer to one or more resolution-specific "variants", see

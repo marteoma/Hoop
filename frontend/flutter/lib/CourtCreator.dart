@@ -64,7 +64,7 @@ class CourtCreator extends StatelessWidget {
     var id = "Add_court";
 
     Marker _marker = new Marker(
-        icon: BitmapDescriptor.fromAsset("assets/cancha_opt.png"),
+        icon: BitmapDescriptor.fromAsset("assets/court.png"),
         markerId: MarkerId(id),
         draggable: true,
         position: LatLng(6.230178, -75.6038394),
@@ -85,7 +85,14 @@ class CourtCreator extends StatelessWidget {
         future: getLocation(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (loading == false) {
-            return MaterialApp(home: MyCustomForm());
+            return MaterialApp(
+                theme: ThemeData(
+                  hintColor: Color(0xFFC0F0E8),
+                  primaryColor: Colors.deepOrangeAccent[400],
+                  canvasColor: Colors.white,
+                  fontFamily: "Montserrat",
+                ),
+                home: MyCustomForm());
           } else {
             print(snapshot.error);
             var location = new Location();
@@ -175,10 +182,11 @@ class _MyCustomFormState extends State<MyCustomForm> {
             Expanded(
                 flex: 1,
                 child: Text(
+                  
                   'Para indicar la ubicacion de la cancha porfavor deja presionado el indicador y luego muevelo hasta la posicion deseada ',
-                  style: DefaultTextStyle.of(context)
-                      .style
-                      .apply(fontSizeFactor: 0.4),
+                  style: TextStyle(color: Colors.black54, ),
+                  textScaleFactor: 1.3
+                      ,
                 )),
             Expanded(
               flex: 3,
@@ -198,19 +206,16 @@ class _MyCustomFormState extends State<MyCustomForm> {
                 flex: 1,
                 child: Text(
                   'Ingrese el nombre de la cancha ',
-                  style: DefaultTextStyle.of(context)
-                      .style
-                      .apply(fontSizeFactor: 0.5),
+                  style: TextStyle(color: Colors.black54, ),
+                  textScaleFactor: 2
+                  ,
                 )),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
                 decoration: InputDecoration(
-                  hintText: "Nombre",
-                  labelText: "Nombre  de cancha*"
-                  
-                ),
-                
+                  hintStyle: TextStyle(color: Colors.deepOrangeAccent),
+                    hintText: "Nombre", labelText: "Nombre  de cancha*"),
                 controller: myController,
               ),
             ),

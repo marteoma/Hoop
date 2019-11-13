@@ -8,6 +8,8 @@ import 'package:uuid/uuid.dart';
 import 'ImagePicker.dart';
 import 'main.dart';
 import 'package:http/http.dart';
+import 'package:back_button_interceptor/back_button_interceptor.dart';
+import 'CourtCreator.dart';
 
 void main() => runApp(CourtCreator2(
       nombreCancha: null,
@@ -16,17 +18,44 @@ void main() => runApp(CourtCreator2(
 var mode;
 const modos = ["3x3", "4x4", "5x5"];
 
-class CourtCreator2 extends StatelessWidget {
+class CourtCreator2 extends StatefulWidget {
   //Constructor que recibe parametros de CourtCreator para completar la informacion para el proceso de
   // creacion de una cancha
-
   final LatLng posicionSeleccionada;
   final String nombreCancha;
   CourtCreator2(
       {Key key,
-      @required this.posicionSeleccionada,
-      @required this.nombreCancha})
+      @required this.nombreCancha,
+      @required this.posicionSeleccionada})
       : super(key: key);
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return CourtCreator2State();
+  }
+}
+
+class CourtCreator2State extends State<CourtCreator2> {
+  @override
+  void initState() {
+    super.initState();
+    BackButtonInterceptor.add(myInterceptor);
+  }
+
+  @override
+  void dispose() {
+    BackButtonInterceptor.remove(myInterceptor);
+    super.dispose();
+  }
+
+  bool myInterceptor(bool stopDefaultButtonEvent) {
+    Navigator.of(context)
+        .pushReplacement(MaterialPageRoute(builder: (context) => CourtCreator()));
+
+    return true;
+  }
+
+   GlobalKey<ScaffoldState> cc2key;
 
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
 
@@ -90,10 +119,16 @@ class CourtCreator2 extends StatelessWidget {
     markers[_marker.markerId] = _marker;
   }
 
+  Future<bool> goback(BuildContext context) {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => CourtCreator()));
+
+    //Navigator.of(context)
+    //  .push(new prefix0.HomePage());
+  }
+
   @override
   Widget build(BuildContext context) {
-    print(posicionSeleccionada);
-    print(nombreCancha);
     addCourts(context);
     return new Container(
       alignment: Alignment.center,
@@ -101,71 +136,76 @@ class CourtCreator2 extends StatelessWidget {
         future: getLocation(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (loading == false) {
-            return new MaterialApp(
-              theme: ThemeData(
+            return MaterialApp(
+                theme: ThemeData(
                   hintColor: Color(0xFFC0F0E8),
                   primaryColor: Colors.deepOrangeAccent[400],
                   canvasColor: Colors.white,
                   fontFamily: "Montserrat",
                 ),
-              home: new Scaffold(
-                resizeToAvoidBottomPadding: false,
-                appBar: new AppBar(
-                  title: new Text("Hoop!"),
-                ),
-                body: new Column(
-                  children: <Widget>[
-                    Expanded(
-                        flex: 1,
-                        child: Text(
-                          ' Agregar Imagenes de la cancha *',
-                          style: TextStyle(
-                            color: Colors.black54,
-                          ),
-                          textScaleFactor: 1.3,
-                        )),
-                    Expanded(
-                      flex: 1,
-                      child: Container(child: ImagePicker()),
+                home: WillPopScope(
+                  onWillPop: () {
+                    return goback(context);
+                  },
+                  child: Scaffold(
+                    key: cc2key,
+                    resizeToAvoidBottomPadding: false,
+                    appBar: new AppBar(
+                      title: new Text("Hoop!"),
                     ),
-                    Expanded(
-                        flex: 1,
-                        child: Text(
-                          ' Seleccione el modo de juego usual *',
-                          style: TextStyle(
-                            color: Colors.black54,
-                          ),
-                          textScaleFactor: 1.3,
-                        )),
-                    Expanded(
-                      flex: 1,
-                      child: Container(child: bottomModePicker(context)),
-                    ),
-                    Container(
-                        child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                    body: new Column(
                       children: <Widget>[
-                        Text(
-                          "Finalizar",
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                        Expanded(
+                            flex: 1,
+                            child: Text(
+                              ' Agregar Imagenes de la cancha *',
+                              style: TextStyle(
+                                color: Colors.black54,
+                              ),
+                              textScaleFactor: 1.3,
+                            )),
+                        Expanded(
+                          flex: 1,
+                          child: Container(child: ImagePicker()),
                         ),
-                        IconButton(
-                            icon: Icon(Icons.arrow_right),
-                            color: Colors.deepOrange,
-                            iconSize: 50,
-                            onPressed: () {
-                              createCourt(nombreCancha, modos[mode],
-                                  posicionSeleccionada);
-                              Navigator.of(context).pop();
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => PrincipalPage()));
-                            }),
+                        Expanded(
+                            flex: 1,
+                            child: Text(
+                              ' Seleccione el modo de juego usual *',
+                              style: TextStyle(
+                                color: Colors.black54,
+                              ),
+                              textScaleFactor: 1.3,
+                            )),
+                        Expanded(
+                          flex: 1,
+                          child: Container(child: bottomModePicker(context)),
+                        ),
+                        Container(
+                            child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            Text(
+                              "Finalizar",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            IconButton(
+                                icon: Icon(Icons.arrow_right),
+                                color: Colors.deepOrange,
+                                iconSize: 50,
+                                onPressed: () {
+                                  createCourt(widget.nombreCancha, modos[mode],
+                                      widget.posicionSeleccionada);
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => PrincipalPage()));
+                                }),
+                          ],
+                        )),
                       ],
-                    )),
-                  ],
-                ),
-              ),
-            );
+                    ),
+                  ),
+                ));
           } else {
             print(snapshot.error);
             var location = new Location();

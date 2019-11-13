@@ -12,8 +12,9 @@ import 'package:latlong/latlong.dart' as calculate;
 import 'package:async_loader/async_loader.dart';
 import 'main.dart';
 import 'package:giffy_dialog/giffy_dialog.dart';
-import 'package:map_launcher/map_launcher.dart';
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:progress_indicators/progress_indicators.dart';
 
 List<double> distancias = List<double>();
 List<String> nombres = List<String>();
@@ -22,10 +23,37 @@ List<LatLng> geo = List<LatLng>();
 void main() => runApp(NearestCourt());
 int meter = 0;
 
-class NearestCourt extends StatelessWidget {
+class NearestCourt extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return NearestCourtState();
+  }
+}
+
+class NearestCourtState extends State<NearestCourt> {
+  @override
+  void initState() {
+    super.initState();
+    BackButtonInterceptor.add(myInterceptor);
+  }
+
+  @override
+  void dispose() {
+    BackButtonInterceptor.remove(myInterceptor);
+    super.dispose();
+  }
+
+  bool myInterceptor(bool stopDefaultButtonEvent) {
+    goback();
+
+    return true;
+  }
+
+  GlobalKey<ScaffoldState> nearestkey;
   final GlobalKey<AsyncLoaderState> asyncLoaderState =
       new GlobalKey<AsyncLoaderState>();
-  NearestCourt({Key key}) : super(key: key);
+
   double rest;
 
   // Variables para el control de la ubicacion del mapa e iconos
@@ -49,14 +77,14 @@ class NearestCourt extends StatelessWidget {
   }
 
   bool back = false;
-  void goback(BuildContext context) {
+  Future<bool> goback() {
     mapas.clear();
     distancias.clear();
     nombres.clear();
 
-    Navigator.of(context).pop();
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => PrincipalPage()));
+    Navigator.pop(context);
+    //Navigator.of(context)
+    //  .push(new prefix0.HomePage());
   }
 
   calculateDistances(List<Mapa> canchas) {
@@ -67,7 +95,7 @@ class NearestCourt extends StatelessWidget {
           new calculate.LatLng(c.latitude, c.longitude));
       distancias.add(rest);
       nombres.add(c.name);
-      geo.add(LatLng(c.latitude,c.longitude));
+      geo.add(LatLng(c.latitude, c.longitude));
     });
     //print(prefix0.lng);
   }
@@ -93,12 +121,10 @@ class NearestCourt extends StatelessWidget {
     calculateDistances(mapas);
   }
 
-
   void showMessage(BuildContext context, int index) async {
     showDialog(
         context: context,
         builder: (_) => AssetGiffyDialog(
-            
               onlyOkButton: true,
               image: Image(image: AssetImage("assets/map.gif")),
               title: Text(
@@ -114,12 +140,11 @@ class NearestCourt extends StatelessWidget {
                 ),
                 textScaleFactor: 1.1,
               ),
-              entryAnimation: EntryAnimation.RIGHT_LEFT,
-              onOkButtonPressed: ()  {
+              entryAnimation: EntryAnimation.RIGHT,
+              onOkButtonPressed: () {
                 //Navigator.of(context).pop();
                 LatLng cord = geo[index];
-                MapUtils.openMap(cord.latitude,cord.longitude);
-                
+                MapUtils.openMap(cord.latitude, cord.longitude);
               },
             ));
   }
@@ -140,14 +165,14 @@ class NearestCourt extends StatelessWidget {
           ),
           title: Text(nombres[index]),
           subtitle: Text("Se encuentra a una distancia de " +
-              (distancias[index]/1000).toStringAsFixed(1) +
+              (distancias[index] / 1000).toStringAsFixed(1) +
               " Kilometros"),
           onTap: () {
             //showMessage(context, index);
             //print(geo);
             //double lat = mapas[index].latitude;
-              //  double lng = mapas[index].longitude;
-               showMessage(context, index);
+            //  double lng = mapas[index].longitude;
+            showMessage(context, index);
           },
         );
       },
@@ -187,15 +212,21 @@ class NearestCourt extends StatelessWidget {
     var _asyncLoader = new AsyncLoader(
       key: asyncLoaderState,
       initState: () async => await getCourt(),
-      renderLoad: () => Center(child: new CircularProgressIndicator()),
+      renderLoad: () => Center(
+          child: HeartbeatProgressIndicator(
+        child: Image.asset(
+          "assets/ball.png",
+          height: 128,
+          width: 128,
+        ),
+      )),
       renderError: ([error]) => getNoConnectionWidget(),
       renderSuccess: ({data}) => getCourtList(data, context),
     );
     return WillPopScope(
-      onWillPop: () {
-        goback(context);
-      },
+      onWillPop: goback,
       child: Scaffold(
+        key: nearestkey,
         appBar: AppBar(title: buildAppBarTitle('Hoop!')),
         body: Center(child: _asyncLoader),
       ),
@@ -204,9 +235,9 @@ class NearestCourt extends StatelessWidget {
 }
 
 class MapUtils {
-
   static openMap(double latitude, double longitude) async {
-    String googleUrl = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+    String googleUrl =
+        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
     if (await canLaunch(googleUrl)) {
       await launch(googleUrl);
     } else {

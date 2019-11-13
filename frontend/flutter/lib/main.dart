@@ -13,7 +13,12 @@ import 'mapas.dart';
 import 'nearestCourt.dart';
 import 'package:async_loader/async_loader.dart';
 import 'CourtCreator.dart';
-import 'Login.dart';
+import 'Loading.dart';
+
+
+class HomePage extends MaterialPageRoute {
+  HomePage() : super(builder: (context) => new PrincipalPage());
+}
 
 void main() => runApp(PrincipalPage());
 final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -33,10 +38,10 @@ var tapped;
 
 Uint8List markerIcon;
 List<Mapa> canchas = List<Mapa>();
-
-class PrincipalPage extends StatelessWidget {
-  final GlobalKey<AsyncLoaderState> asyncLoaderState =
+final GlobalKey<AsyncLoaderState> asyncLoaderState =
       new GlobalKey<AsyncLoaderState>();
+class PrincipalPage extends StatelessWidget {
+  
 
   Future<List<Mapa>> getCourt() async {
     //print("si cogio el metodo");
@@ -112,7 +117,7 @@ class PrincipalPage extends StatelessWidget {
     var _asyncLoader = new AsyncLoader(
       key: asyncLoaderState,
       initState: () async => await getLocation(),
-      renderLoad: () => Center(child: new CircularProgressIndicator()),
+      renderLoad: () => Loading(),
       renderError: ([error]) => getNoConnectionWidget(),
       renderSuccess: ({data}) => MainPage(canchas: data),
     );

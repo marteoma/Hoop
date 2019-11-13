@@ -3,9 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:map/main.dart' as prefix0;
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 
 import 'dart:async';
-
+import 'loading.dart';
 import 'CourtCreator2.dart';
 
 // variables
@@ -36,9 +38,35 @@ void _onMarkerMove(CameraPosition position) {
 
 void main() => runApp(CourtCreator());
 
-class CourtCreator extends StatelessWidget {
+class CourtCreator extends StatefulWidget {
   // Variables para el control de la ubicacion del mapa e iconos
 
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return CourtCreatorState();
+  }
+}
+
+class CourtCreatorState extends State<CourtCreator> {
+   
+ @override
+  void initState() {
+    super.initState();
+    BackButtonInterceptor.add(myInterceptor);
+  }
+   @override
+  void dispose() {
+    BackButtonInterceptor.remove(myInterceptor);
+    super.dispose();
+  }
+
+ bool myInterceptor(bool stopDefaultButtonEvent) {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => prefix0.PrincipalPage()));
+
+    return true;
+  }
   Uint8List markerIcon;
   Future getLocation() async {
     final location = Location();
@@ -98,7 +126,7 @@ class CourtCreator extends StatelessWidget {
             var location = new Location();
             location.requestService();
             loading = false;
-            return new CircularProgressIndicator();
+            return Loading();
           }
         },
       ),
@@ -161,6 +189,13 @@ class _MyCustomFormState extends State<MyCustomForm> {
   // Create a text controller and use it to retrieve the current value
   // of the TextField.
   final myController = TextEditingController();
+ Future<bool> goback(BuildContext context) {
+    Navigator.of(context)
+        .pushReplacement(MaterialPageRoute(builder: (context) => CourtCreator()));
+
+    //Navigator.of(context)
+    //  .push(new prefix0.HomePage());
+  }
 
   @override
   void dispose() {
@@ -168,10 +203,15 @@ class _MyCustomFormState extends State<MyCustomForm> {
     myController.dispose();
     super.dispose();
   }
-
+   GlobalKey<ScaffoldState> cckey;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return  WillPopScope(
+      onWillPop: (){
+        return goback(context);
+      },
+      child:Scaffold(
+      key: cckey,
       body: Scaffold(
         resizeToAvoidBottomPadding: false,
         appBar: AppBar(
@@ -182,11 +222,11 @@ class _MyCustomFormState extends State<MyCustomForm> {
             Expanded(
                 flex: 1,
                 child: Text(
-                  
                   'Para indicar la ubicacion de la cancha porfavor deja presionado el indicador y luego muevelo hasta la posicion deseada ',
-                  style: TextStyle(color: Colors.black54, ),
-                  textScaleFactor: 1.3
-                      ,
+                  style: TextStyle(
+                    color: Colors.black54,
+                  ),
+                  textScaleFactor: 1.3,
                 )),
             Expanded(
               flex: 3,
@@ -206,16 +246,18 @@ class _MyCustomFormState extends State<MyCustomForm> {
                 flex: 1,
                 child: Text(
                   'Ingrese el nombre de la cancha ',
-                  style: TextStyle(color: Colors.black54, ),
-                  textScaleFactor: 2
-                  ,
+                  style: TextStyle(
+                    color: Colors.black54,
+                  ),
+                  textScaleFactor: 2,
                 )),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
                 decoration: InputDecoration(
-                  hintStyle: TextStyle(color: Colors.deepOrangeAccent),
-                    hintText: "Nombre", labelText: "Nombre  de cancha*"),
+                    hintStyle: TextStyle(color: Colors.deepOrangeAccent),
+                    hintText: "Nombre",
+                    labelText: "Nombre  de cancha*"),
                 controller: myController,
               ),
             ),
@@ -244,6 +286,8 @@ class _MyCustomFormState extends State<MyCustomForm> {
           ],
         ),
       ),
+    ) ,
     );
+    
   }
 }
